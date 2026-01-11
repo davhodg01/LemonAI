@@ -67,3 +67,8 @@ variable "static_ip_name" {
 variable "network_tag" {
   default = "lemonai-public"
 }
+
+variable "github_repo" {
+  description = "The GitHub repository in 'owner/repo' format"
+  type        = string
+}

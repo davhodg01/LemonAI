@@ -1,0 +1,49 @@
+name: Deploy LemonAI
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'infra/**'
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  PROJECT_ID: "nimble-factor-478021-b4"
+  TF_WORKING_DIR: "infra/gcp/lemonai"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ env.TF_WORKING_DIR }}
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER_NAME }}
+          service_account: ${{ secrets.WIF_SERVICE_ACCOUNT }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main'
+        run: terraform apply -auto-approve
+        env:
+          TF_VAR_basic_auth_pass: ${{ secrets.TF_VAR_BASIC_AUTH_PASS }}

@@ -1,4 +1,9 @@
 terraform {
+  backend "gcs" {
+    bucket  = "lemonai-state-nimble-factor-478021-b4"
+    prefix  = "terraform/state"
+  }
+
   required_providers {
     google = {
       source  = "hashicorp/google"
