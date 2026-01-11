@@ -36,7 +36,22 @@ This directory contains Terraform configuration to deploy LemonAI on a minimal G
 4.  **Wait for Startup**:
     The VM takes 5-10 minutes to boot, install Docker, and start containers.
 
-## Verification
+## Continuous Deployment (CI/CD)
+This repository is configured with GitHub Actions to automatically deploy changes to Google Cloud.
+
+### How it works
+1.  Push changes to the `main` (or `infra/gcp-deployment`) branch.
+2.  The workflow `.github/workflows/deploy.yaml` triggers.
+3.  It authenticates via **Workload Identity Federation** (Keyless).
+4.  It runs `terraform apply` automatically.
+
+### Secrets Configuration
+Required GitHub Action Secrets:
+-   `WIF_PROVIDER_NAME`: (From `terraform output`)
+-   `WIF_SERVICE_ACCOUNT`: (From `terraform output`)
+-   `TF_VAR_BASIC_AUTH_PASS`: (Your secure password)
+
+## Manual Verification
 
 1.  **Get the Public IP**:
     It will be output at the end of `terraform apply`.
